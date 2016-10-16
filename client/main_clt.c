@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
                 die("connect()");
 
         /* 创建空文件 */
-        sprintf(file, "/tmp/%s", argv[3]);
+        sprintf(file, "./%s", argv[3]);
         fd = open(file, O_CREAT|O_WRONLY|O_TRUNC, S_IRUSR|S_IWUSR);
 
         /* 构造请求 */
