@@ -15,7 +15,7 @@
 #include <arpa/inet.h>
 
 #define DEBUG
-// #undef DEBUG
+/* #undef DEBUG */
 
 #ifndef BUF_SIZE
 #define BUF_SIZE (1024)
@@ -40,7 +40,7 @@ struct video_class {
         struct sockaddr_in ipaddr;
         int skt_desc;
         char buf[BUF_SIZE];
-        
+
         struct video_class_ops *ops;
         struct video_class_hanlder *hanlder;
 };

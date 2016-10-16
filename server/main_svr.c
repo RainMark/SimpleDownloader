@@ -9,8 +9,8 @@ void int_hanlder(int signum)
 {
         #ifdef DEBUG
                 printf("Exiting...\n");
-        #endif 
-        
+        #endif
+
         video_class_destory(server);
         exit(0);
 }
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
 
         if (3 != argc)
                 die("./command ip port");
-        
+
         signal(SIGCHLD, SIG_IGN);
         signal(SIGINT, int_hanlder);
 
