@@ -26,8 +26,9 @@ int main(int argc, char *argv[])
         signal(SIGINT, int_hanlder);
 
         sscanf(argv[2], "%d", &port);
+
         server = video_class_new(&svr_ops, &svr_hanlder);
-        !server->ops->bind(server, NULL, port) || die("Bind Error!");
+        server->ops->bind(server, NULL, port);
         server->ops->run(server, 10);
 
         return 0;

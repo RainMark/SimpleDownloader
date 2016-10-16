@@ -30,13 +30,13 @@ int __bind(struct video_class *svr, const char *addr, int port)
         svr->ipaddr.sin_port = htons(port);
 
         if (addr)
-                !inet_pton(AF_INET, addr, &(svr->ipaddr.sin_addr)) || die("inet_pton() failed!");
+                !inet_pton(AF_INET, addr, &(svr->ipaddr.sin_addr)) || die("inet_pton()");
 
         #ifdef DEBUG
-                printf("skt_desc : %d \naddr : %s\nport: %d\n", svr->skt_desc, addr, port);
+                printf("skt_desc : %d\naddr : %s\nport: %d\n", svr->skt_desc, addr, port);
         #endif
 
-        return bind(svr->skt_desc, (struct sockaddr *)&(svr->ipaddr), sizeof svr->ipaddr);
+        return bind(svr->skt_desc, (struct sockaddr *)&(svr->ipaddr), sizeof svr->ipaddr) && die("Bind Error!");
 }
 
 int __run(struct video_class *svr, int queue_cnt)
@@ -44,7 +44,7 @@ int __run(struct video_class *svr, int queue_cnt)
         int clt_desc;
 
         if (listen(svr->skt_desc, queue_cnt))
-                die("listen() failed!");
+                die("listen()");
 
         #ifdef DEBUG
                 printf("Runing...\n");

@@ -51,8 +51,6 @@ int main(int argc, char *argv[])
         signal(SIGINT, int_hanlder);
 
         sd = socket(AF_INET, SOCK_STREAM, 0);
-        if (sd < 0)
-                die("socket()");
 
         svr_addr.sin_family = AF_INET;
         svr_addr.sin_port   = htons(strtol(argv[2], NULL, 10));
