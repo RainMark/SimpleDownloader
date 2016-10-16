@@ -11,9 +11,11 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <error.h>
 #include <arpa/inet.h>
 
 #define DEBUG
+// #undef DEBUG
 
 #ifndef BUF_SIZE
 #define BUF_SIZE (1024)

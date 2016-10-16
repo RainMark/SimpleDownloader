@@ -2,7 +2,7 @@
 
 int inline die(const char *msg)
 {
-        printf("ERROR: %s\n", msg);
+        perror(msg);
         exit(-1);
         return 0;
 }
@@ -32,9 +32,9 @@ int __bind(struct video_class *svr, const char *addr, int port)
         if (addr)
                 !inet_pton(AF_INET, addr, &(svr->ipaddr.sin_addr)) || die("inet_pton() failed!");
                 
-#ifdef DEBUG
-        printf("skt_desc : %d \naddr : %s\nport: %d\n", svr->skt_desc, addr, port);
-#endif 
+        #ifdef DEBUG
+                printf("skt_desc : %d \naddr : %s\nport: %d\n", svr->skt_desc, addr, port);
+        #endif 
 
         return bind(svr->skt_desc, (struct sockaddr *)&(svr->ipaddr), sizeof svr->ipaddr);
 }
@@ -46,9 +46,9 @@ int __run(struct video_class *svr, int queue_cnt)
         if (listen(svr->skt_desc, queue_cnt))
                 die("listen() failed!");
                 
-#ifdef DEBUG
-        printf("Runing...\n");
-#endif 
+        #ifdef DEBUG
+                printf("Runing...\n");
+        #endif 
                 
         while (1) {
                 int nread, nwrite;
@@ -57,13 +57,17 @@ int __run(struct video_class *svr, int queue_cnt)
                         continue;
                 
                 if (!fork()) {
-                        nread = read(svr->skt_desc, svr->buf, BUF_SIZE);
+                        nread = read(clt_desc, svr->buf, BUF_SIZE);
                         svr->buf[nread] = '\0';
-#ifdef DEBUG
-        printf("Reiceve :%s\n", svr->buf);
-#endif 
+
+                        #ifdef DEBUG
+                                printf("Nread: %d\nReiceve :%s\n", nread, svr->buf);
+                        #endif 
+                        
                         svr->ops->response(svr, clt_desc);
+                        
                         close(clt_desc);
+                        video_class_destory(svr);
                         exit(0);
                 }
                 
@@ -80,17 +84,13 @@ int __response(struct video_class *svr, int desc)
         
         sscanf(svr->buf, "%s", req);
         
-#ifdef DEBUG
-        printf("Request :%s\n", req);
-#endif 
-
-        if (!strcmp("FILE_FETCH", req)) {
+        if (!strcmp("GET", req)) {
                 char file[BUF_SIZE];
                 
                 sscanf(svr->buf + strlen(req), "%s", file);
                 retvar = svr->hanlder->send_file(svr, desc, file);
                 
-        } else if (!strcmp("GREET", req)) {
+        } else if (!strcmp("HELLO", req)) {
                 retvar = svr->hanlder->say_hello(svr, desc, "Video server v0.1");
 
         } else {
@@ -112,7 +112,7 @@ int __say_hello(struct video_class *svr, int client, const char *msg)
         int nwrite;
         char buf[BUF_SIZE];
         
-        sprintf(buf, "%s\r\n%s", "GREET", msg);
+        sprintf(buf, "%s\r\n%s", "HELLO", msg);
         nwrite = write(client, buf, strlen(buf));
         
         return nwrite == strlen(buf);
@@ -133,10 +133,24 @@ int __send_file(struct video_class *svr, int client, const char *file)
         }
                 
         stat(file, &st);
-        sprintf(buf, "%s\r\n%ld", "FILE_START", st.st_size);
-        nwrite = write(client, buf, strlen(buf));
-        while (!(nread = read(fd, buf, BUF_SIZE)))
+        sprintf(buf, "%s\r\n%ld", "START", st.st_size);
+
+        write(client, buf, strlen(buf));
+        usleep(500);
+        while ((nread = read(fd, buf, BUF_SIZE))) {
+
+                #ifdef DEBUG
+                        printf("nread :%d\n", nread);
+                #endif 
+
+                if (nread < 0)
+                        break;
                 nwrite = write(client, buf, nread);
+
+                #ifdef DEBUG
+                        printf("nwrite :%d\n", nwrite);
+                #endif 
+        }
         close(fd);
                 
 no_file:

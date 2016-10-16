@@ -7,9 +7,10 @@ struct video_class *server;
 
 void int_hanlder(int signum)
 {
-#ifdef DEBUG
-        printf("Exiting...\n");
-#endif 
+        #ifdef DEBUG
+                printf("Exiting...\n");
+        #endif 
+        
         video_class_destory(server);
         exit(0);
 }
