@@ -22,10 +22,10 @@
 #endif /*BUF_SIZE*/
 
 struct video_class;
-struct video_class_hanlder;
+struct video_class_handler;
 struct video_class_ops;
 
-struct video_class_hanlder {
+struct video_class_handler {
         int (*say_hello)(struct video_class *, int, const char *);
         int (*send_file)(struct video_class *, int, const char *);
 };
@@ -42,11 +42,11 @@ struct video_class {
         char buf[BUF_SIZE];
 
         struct video_class_ops *ops;
-        struct video_class_hanlder *hanlder;
+        struct video_class_handler *handler;
 };
 
 extern int die(const char *);
-extern struct video_class *video_class_new(struct video_class_ops *, struct video_class_hanlder *);
+extern struct video_class *video_class_new(struct video_class_ops *, struct video_class_handler *);
 extern void video_class_destory(struct video_class *);
 
 #endif /* __VIDEO_CLASS_H  */

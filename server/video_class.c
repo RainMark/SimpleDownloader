@@ -4,14 +4,13 @@ int inline die(const char *msg)
 {
         perror(msg);
         exit(-1);
-        return 0;
 }
 
-struct video_class *video_class_new(struct video_class_ops *ops, struct video_class_hanlder *hanlder)
+struct video_class *video_class_new(struct video_class_ops *ops, struct video_class_handler *handler)
 {
         struct video_class *svr = malloc(sizeof (struct video_class));
         svr->ops = ops;
-        svr->hanlder = hanlder;
+        svr->handler = handler;
         svr->ipaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 
         return svr;
@@ -88,13 +87,13 @@ int __response(struct video_class *svr, int desc)
                 char file[BUF_SIZE];
 
                 sscanf(svr->buf + strlen(req), "%s", file);
-                retvar = svr->hanlder->send_file(svr, desc, file);
+                retvar = svr->handler->send_file(svr, desc, file);
 
         } else if (!strcmp("HELLO", req)) {
-                retvar = svr->hanlder->say_hello(svr, desc, "Video server v0.1");
+                retvar = svr->handler->say_hello(svr, desc, "Video server v0.1");
 
         } else {
-                retvar = svr->hanlder->say_hello(svr, desc, "Request error!");
+                retvar = svr->handler->say_hello(svr, desc, "Request error!");
 
         }
 
@@ -127,7 +126,7 @@ int __send_file(struct video_class *svr, int client, const char *file)
         int fd = open(file, O_RDONLY);
 
         if (fd < 0) {
-                svr->hanlder->say_hello(svr, client, "File not exist!");
+                svr->handler->say_hello(svr, client, "File not exist!");
                 retvar = -1;
                 goto no_file;
         }
@@ -157,7 +156,7 @@ no_file:
         return retvar;
 }
 
-struct video_class_hanlder svr_hanlder = {
+struct video_class_handler svr_handler = {
         .say_hello      = __say_hello,
         .send_file      = __send_file,
 };

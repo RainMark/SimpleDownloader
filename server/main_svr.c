@@ -1,11 +1,11 @@
 #include "video_class.h"
 
-extern struct video_class_hanlder svr_hanlder;
+extern struct video_class_handler svr_handler;
 extern struct video_class_ops svr_ops;
 
 struct video_class *server;
 
-void int_hanlder(int signum)
+void int_handler(int signum)
 {
         #ifdef DEBUG
                 printf("Exiting...\n");
@@ -23,11 +23,11 @@ int main(int argc, char *argv[])
                 die("./command ip port");
 
         signal(SIGCHLD, SIG_IGN);
-        signal(SIGINT, int_hanlder);
+        signal(SIGINT, int_handler);
 
         sscanf(argv[2], "%d", &port);
 
-        server = video_class_new(&svr_ops, &svr_hanlder);
+        server = video_class_new(&svr_ops, &svr_handler);
         server->ops->bind(server, NULL, port);
         server->ops->run(server, 10);
 
